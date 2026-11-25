@@ -3,3 +3,7 @@ bin/
 *.prg
 *.prg.debug.xml
 *.iq
+
+# 제목 바꾸기 전 옛 시뮬레이터 캡처 (store/images/ 가 실제 스토어용)
+store/zzGradePlus_*.png
+store/images/hero_ko.png
