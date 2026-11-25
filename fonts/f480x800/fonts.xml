@@ -1,9 +1,10 @@
 <fonts>
     <font id="C10Main" filename="c10main_74.fnt" antialias="true" filter="0123456789.- "/>
+    <font id="C10Main4" filename="c10main4_59.fnt" antialias="true" filter="0123456789.- "/>
     <font id="C10MainDec" filename="c10maindec_44.fnt" antialias="true" filter="0123456789.- "/>
     <font id="C10Sub" filename="c10sub_41.fnt" antialias="true" filter="0123456789.- @"/>
-    <font id="C10UnitMain" filename="c10unitmain_16.fnt" antialias="true" filter="%mft"/>
-    <font id="C10UnitSub" filename="c10unitsub_16.fnt" antialias="true" filter="%mft"/>
+    <font id="C10UnitMain" filename="c10unitmain_16.fnt" antialias="true" filter="%mftk"/>
+    <font id="C10UnitSub" filename="c10unitsub_16.fnt" antialias="true" filter="%mftk"/>
     <font id="WideVal" filename="wideval_63.fnt" antialias="true" filter="0123456789.- "/>
     <font id="WideVal5" filename="wideval5_50.fnt" antialias="true" filter="0123456789.- "/>
     <font id="WideTitle" filename="widetitle_26.fnt" antialias="true" filter="zzGrade+@"/>

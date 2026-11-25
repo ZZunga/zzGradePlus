@@ -66,13 +66,25 @@ class zzGradePlusView extends WatchUi.DataField {
     private var _labelW as Number = -1;         // 라벨 너비 (바뀔 때만 다시 잼)
     private var _L as Number = 0, _T as Number = 0, _R as Number = 0, _B as Number = 0;
     private var _fMain as Font = Graphics.FONT_XTINY, _fMainDec as Font = Graphics.FONT_XTINY, _fSub as Font = Graphics.FONT_XTINY;
+    private var _fMain4 as Font = Graphics.FONT_XTINY;   // 경사도용 큰 글꼴과 소수점 글꼴 사이
     private var _fUnitMain as Font = Graphics.FONT_XTINY, _fUnitSub as Font = Graphics.FONT_XTINY;
     private var _fVal5 as Font = Graphics.FONT_XTINY, _fVal as Font = Graphics.FONT_XTINY, _fTitle as Font = Graphics.FONT_XTINY, _fLabel as Font = Graphics.FONT_XTINY;
     private var _c10Loaded as Boolean = false;
     private var _xMainValG as Number = 0, _xMainValA as Number = 0;   // 큰 글씨 값의 오른쪽 끝 (경사도 / 고도)
-    private var _yMain as Number = 0, _yMainDec as Number = 0, _wMainDec as Number = 0;
+    private var _yMain as Number = 0, _yMainDec as Number = 0, _yMain4 as Number = 0;
+    private var _yMainSub as Number = 0, _wMainDec as Number = 0;
     private var _xSubValG as Number = 0, _xSubValA as Number = 0;     // 작은 글씨 값의 오른쪽 끝
     private var _xSubNoUnit as Number = 0, _xSubMax4 as Number = 0;
+    private var _xMainValK as Number = 0, _xSubValK as Number = 0;   // 천 단위(km / kft) 표시용
+    private var _wIcon as Number = 0;           // 좌상단 산 아이콘 폭
+    // 각 글꼴로 칸에 들어가는 숫자 자리수 (경사도는 길어야 3글자지만 고도는 4~5자리)
+    private var _nMain as Number = 3;           // 큰 글꼴로 칸에 들어가는 자리수
+    private var _nMain4 as Number = 4;          // 중간 글꼴로 들어가는 자리수 (고도 4자리용)
+    private var _nMainDec as Number = 5;        // 소수점 글꼴로 들어가는 자리수
+    private var _nMainSub as Number = 5;        // 가장 작은 글꼴(작은 값용)로 들어가는 자리수
+    private var _nMainBare as Number = 5;       // 단위를 뺐을 때 들어가는 자리수
+    private var _nSubPlain as Number = 5;       // 작은 값 자리에 단위 없이 들어가는 자리수
+    private var _nVal as Number = 4;            // 넓은 칸 글꼴로 들어가는 자리수
     private var _xTitleText as Number = 0, _yLabel as Number = 0;
     private var _yVal as Number = 0, _yValSmall as Number = 0, _xc1 as Number = 0, _xc2 as Number = 0, _xcMid as Number = 0, _yDiv1 as Number = 0;
 
@@ -159,6 +171,7 @@ class zzGradePlusView extends WatchUi.DataField {
         if (!_c10Loaded) {
             _fMain     = WatchUi.loadResource(Rez.Fonts.C10Main) as WatchUi.FontResource;
             _fMainDec  = WatchUi.loadResource(Rez.Fonts.C10MainDec) as WatchUi.FontResource;
+            _fMain4    = WatchUi.loadResource(Rez.Fonts.C10Main4) as WatchUi.FontResource;
             _fSub      = WatchUi.loadResource(Rez.Fonts.C10Sub) as WatchUi.FontResource;
             _fUnitMain = WatchUi.loadResource(Rez.Fonts.C10UnitMain) as WatchUi.FontResource;
             _fUnitSub  = WatchUi.loadResource(Rez.Fonts.C10UnitSub) as WatchUi.FontResource;
@@ -173,20 +186,61 @@ class zzGradePlusView extends WatchUi.DataField {
         var aMain = Graphics.getFontAscent(_fMain);
         _yMain    = _B - aMain;
         _yMainDec = _yMain + aMain - Graphics.getFontAscent(_fMainDec);
+        _yMain4   = _yMain + aMain - Graphics.getFontAscent(_fMain4);   // 바닥선 맞춤
+        _yMainSub = _yMain + aMain - Graphics.getFontAscent(_fSub);
         // 설정이 바뀌어도 onLayout 이 다시 불리지 않을 수 있어, 두 경우를 모두 계산해 둔다
         _xMainValG = _R - dc.getTextWidthInPixels("%", _fUnitMain) - ug;
-        _xMainValA = _R - dc.getTextWidthInPixels("ft", _fUnitMain) - ug;
+        _xMainValA = _R - maxUnitW(dc, _fUnitMain) - ug;
         _wMainDec = dc.getTextWidthInPixels(".0", _fMainDec);
-        var uw = dc.getTextWidthInPixels("ft", _fUnitSub);
+        // 큰 글씨 자리에 고도가 들어갈 때 몇 자리까지 칸에 들어가는가
+        _nMain    = fitDigits(dc, _fMain,    _xMainValA - _L);
+        _nMain4   = fitDigits(dc, _fMain4,   _xMainValA - _L);
+        _nMainDec = fitDigits(dc, _fMainDec, _xMainValA - _L);
+        _nMainSub  = fitDigits(dc, _fSub, _xMainValA - _L);
+        _nMainBare = fitDigits(dc, _fSub, _R - _L);          // 단위를 숨겼을 때
+        _xMainValK = _R - kiloUnitW(dc, _fUnitMain) - ug;
+        var uw = maxUnitW(dc, _fUnitSub);
         _xSubValA   = _R - uw - ug;                  // 단위 표시할 때 값의 오른쪽 끝
         _xSubValG   = _R - dc.getTextWidthInPixels("%", _fUnitSub) - ug;
         _xSubNoUnit = _R;                            // 단위를 숨길 때
         // 이 폭 안에 4자리+단위가 들어가는지 (안 들어가면 4자리 이상은 단위 숨김)
         _xSubMax4 = _xSubValA - dc.getTextWidthInPixels("8888", _fSub) - dc.getTextWidthInPixels("@", _fSub);
+        _nSubPlain = fitDigits(dc, _fSub, _R - _L);
+        _wIcon = dc.getTextWidthInPixels("@", _fSub);
+        _xSubValK  = _R - kiloUnitW(dc, _fUnitSub) - ug;
+    }
+
+    // 단위는 설정에 따라 "m" 또는 "ft" 이므로 넓은 쪽을 기준으로 자리를 비워둔다
+    private function maxUnitW(dc as Graphics.Dc, f as Font) as Number {
+        var a = dc.getTextWidthInPixels("ft", f);
+        var b = dc.getTextWidthInPixels("m", f);
+        return (b > a) ? b : a;
+    }
+
+    // 천 단위 단위 글자 ("km" 또는 "kft") 중 넓은 쪽
+    private function kiloUnitW(dc as Graphics.Dc, f as Font) as Number {
+        var a = dc.getTextWidthInPixels("km", f);
+        var b = dc.getTextWidthInPixels("kft", f);
+        return (b > a) ? b : a;
+    }
+
+    // 1만이 넘어 칸에 안 들어갈 때 12345 -> "12.3" (단위는 km / kft)
+    private function kiloStr(v as Number) as String {
+        var a = (v < 0) ? -v : v;
+        return ((v < 0) ? "-" : "") + (a / 1000).toString() + "." + ((a % 1000) / 100).toString();
+    }
+
+    // avail 폭에 그 글꼴로 숫자가 몇 자리 들어가는지
+    private function fitDigits(dc as Graphics.Dc, f as Font, avail as Number) as Number {
+        var w = dc.getTextWidthInPixels("8888", f);
+        if (w <= 0) { return 99; }
+        var n = (avail * 4) / w;
+        return (n < 1) ? 1 : n;
     }
 
     private function layoutWide(dc as Graphics.Dc, w as Number, h as Number) as Void {
-        _fMainDec = Graphics.FONT_XTINY; _fUnitMain = Graphics.FONT_XTINY; _fUnitSub = Graphics.FONT_XTINY;
+        _fMainDec = Graphics.FONT_XTINY; _fMain4 = Graphics.FONT_XTINY;
+        _fUnitMain = Graphics.FONT_XTINY; _fUnitSub = Graphics.FONT_XTINY;
         _c10Loaded = false;
         _fTitle = WatchUi.loadResource(Rez.Fonts.WideTitle) as WatchUi.FontResource;
         _fLabel = WatchUi.loadResource(Rez.Fonts.WideLabel) as WatchUi.FontResource;
@@ -220,6 +274,9 @@ class zzGradePlusView extends WatchUi.DataField {
         _xc1 = (_L + mid - gap / 2) / 2;
         _xc2 = (mid + gap / 2 + _R) / 2;
         _xcMid = mid;
+        // 두 값이 나란히 설 때 한쪽에 주어지는 폭
+        var half = (mid - gap / 2) - _L;
+        _nVal = fitDigits(dc, _fVal, half);
     }
 
     // =========================================================
@@ -345,18 +402,42 @@ class zzGradePlusView extends WatchUi.DataField {
             dc.drawText(_R, _yMain, _fUnitMain, "%", Graphics.TEXT_JUSTIFY_RIGHT);
         } else {
             dc.setColor(fg, Graphics.COLOR_TRANSPARENT);
-            if (_mainS.length() >= 5) {              // 5자리(ft 10000 이상)는 한 단계 작은 글씨
-                dc.drawText(_xMainValA, _yMainDec, _fMainDec, _mainS, Graphics.TEXT_JUSTIFY_RIGHT);
-            } else {
-                dc.drawText(_xMainValA, _yMain, _fMain, _mainS, Graphics.TEXT_JUSTIFY_RIGHT);
+            // 칸에 맞게: 단위와 같이 -> 단위 숨김 -> 천 단위 (12345 m -> 12.3 km)
+            var s = _mainS;
+            var u = _unit;
+            var xa = _xMainValA;
+            var n = s.length();
+            if (n > _nMainSub) {
+                if (n <= _nMainBare) {
+                    u = "";                     // 단위를 빼면 숫자가 그대로 들어간다
+                    xa = _R;
+                } else {
+                    s = kiloStr(_mainV);
+                    u = _metric ? "km" : "kft";
+                    xa = _xMainValK;
+                    n = s.length();
+                }
             }
-            dc.drawText(_R, _yMain, _fUnitMain, _unit, Graphics.TEXT_JUSTIFY_RIGHT);
+            // 칸에 들어가는 가장 큰 글꼴을 쓴다 (경사도용 > 4자리용 > 소수점용 > 작은값용)
+            if (n <= _nMain) {
+                dc.drawText(xa, _yMain, _fMain, s, Graphics.TEXT_JUSTIFY_RIGHT);
+            } else if (n <= _nMain4) {
+                dc.drawText(xa, _yMain4, _fMain4, s, Graphics.TEXT_JUSTIFY_RIGHT);
+            } else if (n <= _nMainDec) {
+                dc.drawText(xa, _yMainDec, _fMainDec, s, Graphics.TEXT_JUSTIFY_RIGHT);
+            } else {
+                dc.drawText(xa, _yMainSub, _fSub, s, Graphics.TEXT_JUSTIFY_RIGHT);
+            }
+            if (!u.equals("")) {
+                dc.drawText(_R, _yMain, _fUnitMain, u, Graphics.TEXT_JUSTIFY_RIGHT);
+            }
         }
 
         // 위쪽: 아이콘 + 작은 값
         var topS = (_secondKind == VAL_GRADE) ? _gS
                  : ((_secondKind == VAL_NONE) ? "" : _subS);
-        if (topS.length() < 5) {                     // 5자리(ft 10000 이상)면 아이콘 생략
+        // 값이 왼쪽까지 밀고 들어오면 아이콘을 생략한다
+        if ((_R - dc.getTextWidthInPixels(topS, _fSub)) > (_L + _wIcon)) {
             dc.setColor(ic, Graphics.COLOR_TRANSPARENT);
             dc.drawText(_L, _T, _fSub, "@", Graphics.TEXT_JUSTIFY_LEFT);
         }
@@ -369,6 +450,11 @@ class zzGradePlusView extends WatchUi.DataField {
             return;
         }
         dc.setColor(fg, Graphics.COLOR_TRANSPARENT);
+        if (topS.length() > _nSubPlain) {        // 단위를 빼도 안 들어가면 천 단위로
+            dc.drawText(_xSubValK, _T, _fSub, kiloStr(_sub), Graphics.TEXT_JUSTIFY_RIGHT);
+            dc.drawText(_R, _T, _fUnitSub, _metric ? "km" : "kft", Graphics.TEXT_JUSTIFY_RIGHT);
+            return;
+        }
         var showUnit = (topS.length() < 4) || (_xSubMax4 >= _L);   // 4자리 이상은 칸에 들어갈 때만 단위 표시
         if (showUnit) {
             dc.drawText(_xSubValA, _T, _fSub, _subS, Graphics.TEXT_JUSTIFY_RIGHT);
@@ -407,7 +493,7 @@ class zzGradePlusView extends WatchUi.DataField {
 
     private function drawWideVal(dc as Graphics.Dc, x as Number, v as String, c as Number) as Void {
         dc.setColor(c, Graphics.COLOR_TRANSPARENT);
-        if (v.length() >= 5) {                      // 5자리(브레베 획득고도 1만 m 이상 등)
+        if (v.length() > _nVal) {                   // 칸을 넘으면 한 단계 작은 글씨
             dc.drawText(x, _yValSmall, _fVal5, v, Graphics.TEXT_JUSTIFY_CENTER);
         } else {
             dc.drawText(x, _yVal, _fVal, v, Graphics.TEXT_JUSTIFY_CENTER);

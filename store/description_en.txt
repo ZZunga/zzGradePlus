@@ -39,6 +39,9 @@ Edge 540 / 550 / 840 / 850 / 1040 / 1050 / 1060
 Change settings in the Garmin Connect IQ app or Garmin Express.
 
 [What's new]
+v1.0.3
+- Fixed altitude and ascent overflowing the slot when shown in the large digits
+
 v1.0.2
 - New settings for the main value and the second value - swap grade and altitude
 - New background setting (match device screen / plain black-white / transparent)

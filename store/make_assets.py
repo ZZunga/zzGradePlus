@@ -95,6 +95,12 @@ NIGHT_HIGH, NIGHT_LOW = rgb(COLORS[2]), rgb(COLORS[7])    # 분홍 / 하늘
 THR10 = 10                                                # 기본 1 %
 
 
+def kilo_str(v):
+    """1만이 넘어 칸에 안 들어갈 때 12345 -> '12.3'."""
+    a = abs(v)
+    return ("-" if v < 0 else "") + str(a // 1000) + "." + str((a % 1000) // 100)
+
+
 def grade_parts(g10):
     sign = "-" if g10 < 0 else ""
     a = abs(g10)
@@ -133,14 +139,25 @@ def draw_cell(img, box, F, screen_w, cell, night, unit="m"):
 
     if not wide:
         fMain, fDec = F["C10Main"], F["C10MainDec"]
+        fMain4 = F.get("C10Main4", fDec)
         fSub, fUM, fUS = F["C10Sub"], F["C10UnitMain"], F["C10UnitSub"]
         ug = max(2, int(w * 0.02))
         yMain = B - fMain.base
         yDec = yMain + fMain.base - fDec.base
+        yMain4 = yMain + fMain.base - fMain4.base
         xMainG = R - fUM.width("%") - ug
-        xMainA = R - fUM.width("ft") - ug
+        xMainA = R - max(fUM.width("ft"), fUM.width("m")) - ug
+        nMain = max(1, (xMainA - L) * 4 // max(1, fMain.width("8888")))
+        nMain4 = max(1, (xMainA - L) * 4 // max(1, fMain4.width("8888")))
+        nMainDec = max(1, (xMainA - L) * 4 // max(1, fDec.width("8888")))
+        nMainSub = max(1, (xMainA - L) * 4 // max(1, fSub.width("8888")))
+        nMainBare = max(1, (R - L) * 4 // max(1, fSub.width("8888")))
+        yMainSub = yMain + fMain.base - fSub.base
+        xMainK = R - max(fUM.width("km"), fUM.width("kft")) - ug
+        nSubPlain = max(1, (R - L) * 4 // max(1, fSub.width("8888")))
+        xSubK = R - max(fUS.width("km"), fUS.width("kft")) - ug
         wDec = fDec.width(".0")
-        xSubA = R - fUS.width("ft") - ug
+        xSubA = R - max(fUS.width("ft"), fUS.width("m")) - ug
         xSubG = R - fUS.width("%") - ug
         xSubMax4 = xSubA - fSub.width("8888") - fSub.width("@")
 
@@ -152,20 +169,39 @@ def draw_cell(img, box, F, screen_w, cell, night, unit="m"):
             fMain.draw(img, x0 + x, y0 + yMain, gi, mc, "right")
             fUM.draw(img, x0 + R, y0 + yMain, "%", fg, "right")
         else:
-            if len(mains) >= 5:
-                fDec.draw(img, x0 + xMainA, y0 + yDec, mains, fg, "right")
+            s, u, xa = mains, unit, xMainA
+            n = len(s)
+            if n > nMainSub:
+                if n <= nMainBare:
+                    u, xa = "", R           # 단위를 빼면 들어간다
+                else:
+                    s = kilo_str(cell.get("v", 0))
+                    u = "km" if unit == "m" else "kft"
+                    xa = xMainK
+                    n = len(s)
+            if n <= nMain:
+                fMain.draw(img, x0 + xa, y0 + yMain, s, fg, "right")
+            elif n <= nMain4:
+                fMain4.draw(img, x0 + xa, y0 + yMain4, s, fg, "right")
+            elif n <= nMainDec:
+                fDec.draw(img, x0 + xa, y0 + yDec, s, fg, "right")
             else:
-                fMain.draw(img, x0 + xMainA, y0 + yMain, mains, fg, "right")
-            fUM.draw(img, x0 + R, y0 + yMain, unit, fg, "right")
+                fSub.draw(img, x0 + xa, y0 + yMainSub, s, fg, "right")
+            if u:
+                fUM.draw(img, x0 + R, y0 + yMain, u, fg, "right")
 
         tops = gs if second == GRADE else ("" if second == NONE else subs)
-        if len(tops) < 5:
+        if (R - fSub.width(tops)) > (L + fSub.width("@")):
             fSub.draw(img, x0 + L, y0 + T, "@", ic)
         if second == NONE:
             return
         if second == GRADE:
             fSub.draw(img, x0 + xSubG, y0 + T, gs, mc, "right")
             fUS.draw(img, x0 + R, y0 + T, "%", fg, "right")
+            return
+        if len(tops) > nSubPlain:                 # 단위를 빼도 안 들어가면 천 단위로
+            fSub.draw(img, x0 + xSubK, y0 + T, kilo_str(cell.get("v2", 0)), fg, "right")
+            fUS.draw(img, x0 + R, y0 + T, "km" if unit == "m" else "kft", fg, "right")
             return
         if len(tops) < 4 or xSubMax4 >= L:
             fSub.draw(img, x0 + xSubA, y0 + T, subs, fg, "right")
@@ -201,9 +237,10 @@ def draw_cell(img, box, F, screen_w, cell, night, unit="m"):
     mid = w // 2
     xc1 = (L + mid - gap // 2) // 2
     xc2 = (mid + gap // 2 + R) // 2
+    nVal = max(1, ((mid - gap // 2) - L) * 4 // max(1, fVal.width("8888")))
 
     def val(xc, s, col):
-        if len(s) >= 5:
+        if len(s) > nVal:
             fVal5.draw(img, x0 + xc, y0 + yVal5, s, col, "center")
         else:
             fVal.draw(img, x0 + xc, y0 + yVal, s, col, "center")
