@@ -370,7 +370,7 @@ class zzGradePlusView extends WatchUi.DataField {
         var fg = night ? Graphics.COLOR_WHITE
                        : (soft ? 0x313152 : Graphics.COLOR_BLACK);
         var bg = night ? (soft ? 0x17181D : Graphics.COLOR_BLACK)
-                       : Graphics.COLOR_WHITE;
+                       : (soft ? 0xDCDCDC : Graphics.COLOR_WHITE);   // 밝은 배경도 순백이 아니다
         // 투명 : 아예 칠하지 않아 기기 배경이 그대로 비친다 (테마가 무엇이든 일치)
         if (_bgMode == BG_CLEAR || (_bgMode == BG_AUTO && sysClear)) {
             bg = Graphics.COLOR_TRANSPARENT;
