@@ -1,5 +1,5 @@
 <properties>
-    <property id="appVersion" type="string">1.0.3</property>
+    <property id="appVersion" type="string">1.0.4</property>
     <property id="filterlen" type="number">3</property>
     <!-- 값 목록(둘 다 같은 번호): 0=경사도 1=고도 2=총 획득고도 3=Lap 획득고도 4=없음 -->
     <!-- 메인 값(큰 글씨). 0~3 -->
