@@ -1,0 +1,5 @@
+# Connect IQ 빌드 산출물
+bin/
+*.prg
+*.prg.debug.xml
+*.iq

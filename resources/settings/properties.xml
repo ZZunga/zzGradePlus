@@ -1,0 +1,16 @@
+<properties>
+    <property id="appVersion" type="string">1.0.2</property>
+    <property id="filterlen" type="number">3</property>
+    <!-- 값 목록(둘 다 같은 번호): 0=경사도 1=고도 2=총 획득고도 3=Lap 획득고도 4=없음 -->
+    <!-- 메인 값(큰 글씨). 0~3 -->
+    <property id="mainValue" type="number">0</property>
+    <!-- 두 번째 값(작은 글씨). 0~4. 메인과 겹치면 앱이 고쳐서 저장한다 -->
+    <property id="dataType" type="number">2</property>
+    <!-- 배경색: 0=기기 화면색에 맞춤 1=검정/흰색 그대로(기본) 2=투명(안 칠함) -->
+    <property id="bgMode" type="number">1</property>
+    <property id="threshold" type="number">1</property>
+    <property id="dayHighColor" type="number">1</property>
+    <property id="dayLowColor" type="number">8</property>
+    <property id="nightHighColor" type="number">2</property>
+    <property id="nightLowColor" type="number">7</property>
+</properties>

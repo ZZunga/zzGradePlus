@@ -1,0 +1,5 @@
+info face="TitilliumWeb" size=32 bold=1 italic=0 charset="" unicode=1 stretchH=100 smooth=1 aa=1 padding=0,0,0,0 spacing=1,1 outline=0
+common lineHeight=24 base=22 scaleW=22 scaleH=28 pages=1 packed=0 alphaChnl=1 redChnl=0 greenChnl=0 blueChnl=0
+page id=0 file="c10unitmain_22.png"
+chars count=1
+char id=37 x=2 y=2 width=18 height=24 xoffset=0 yoffset=0 xadvance=18 page=0 chnl=15

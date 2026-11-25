@@ -1,0 +1,47 @@
+[Title]
+zzGradePlus - Grade, Altitude, Ascent
+
+[Description]
+A grade data field with big, easy-to-read digits. Shows the current road grade (%) together with altitude, total ascent or lap ascent, and colors climbs and descents.
+Built with the TitilliumWeb font for better readability on the move.
+A rebuilt version of zzGrade.
+
+[Grade]
+- Calculated every 3 seconds from altitude change over distance ridden, then smoothed (averaging window 3 to 15 seconds, set in settings).
+- Shows the real grade right after you start again, and keeps the last grade while you are stopped.
+- Under 10%: one decimal. 10% and above: whole numbers.
+- The grade is saved to your activity, so you can see it as a chart in Garmin Connect.
+
+[Second value]
+- Altitude / Total ascent / Lap ascent / None
+- Units follow your device setting (m or ft).
+- Pick the main value (big digits) and the second value (small digits) separately. Both offer grade, altitude, total ascent and lap ascent.
+- If the two match, the second value changes automatically.
+- Set the second value to None to show the main value alone.
+
+[Colors]
+- Grade changes color above a set threshold (default 1%) for climbs and below its negative for descents.
+- Pick separate climb and descent colors for day and night.
+
+[Background]
+- Follows your device setting (white or black). Three choices in the settings:
+- Plain black / white (default), match the device screen, or transparent.
+- Transparent paints no background at all, so the device background shows through. If the data field looks slightly off from the rest of the screen, try transparent.
+
+[Layouts, picked automatically]
+- One slot of the 10-field layout: grade icon and second value on top, large grade below.
+- Wide slots: zzGrade+ title with the active value on top, both values side by side below. 5-digit ascent fits.
+- Same typeface, sizes and layout as the other Plus data fields, so they look consistent side by side.
+
+[Supported devices]
+Edge 540 / 550 / 840 / 850 / 1040 / 1050 / 1060
+
+Change settings in the Garmin Connect IQ app or Garmin Express.
+
+[What's new]
+v1.0.2
+- New settings for the main value and the second value - swap grade and altitude
+- New background setting (match device screen / plain black-white / transparent)
+
+v1.0.1
+- First release
