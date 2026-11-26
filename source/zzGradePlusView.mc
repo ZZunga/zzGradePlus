@@ -37,7 +37,7 @@ class zzGradePlusView extends WatchUi.DataField {
     private var _dayHigh as Number = 0xFF0000, _dayLow as Number = 0x0000FF;
     private var _nightHigh as Number = 0xFF55AA, _nightLow as Number = 0x00AAFF;
     private var _colorOn as Boolean = true;
-    private var _bgMode as Number = BG_PLAIN;
+    private var _bgMode as Number = BG_AUTO;
 
     // ---- 경사도 계산 상태 ----
     private var _filter as AvgFilter = new AvgFilter(3);
@@ -105,7 +105,7 @@ class zzGradePlusView extends WatchUi.DataField {
 
         // 배경색 : 0 기기 화면색에 맞춤, 1 검정·흰색 그대로(기본), 2 투명
         var bm = Application.Properties.getValue("bgMode");
-        _bgMode = (bm instanceof Number && bm >= 0 && bm <= 2) ? bm : BG_PLAIN;
+        _bgMode = (bm instanceof Number && bm >= 0 && bm <= 2) ? bm : BG_AUTO;
 
         // 메인 값(큰 글씨)과 두 번째 값(작은 글씨)을 같은 목록에서 따로 고른다.
         //  제약은 하나, 둘이 같으면 안 된다. 같으면 두 번째를 바꿔서 저장한다.

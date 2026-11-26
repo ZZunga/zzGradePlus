@@ -6,8 +6,8 @@
     <property id="mainValue" type="number">0</property>
     <!-- 두 번째 값(작은 글씨). 0~4. 메인과 겹치면 앱이 고쳐서 저장한다 -->
     <property id="dataType" type="number">2</property>
-    <!-- 배경색: 0=기기 화면색에 맞춤 1=검정/흰색 그대로(기본) 2=투명(안 칠함) -->
-    <property id="bgMode" type="number">1</property>
+    <!-- 배경색: 0=기기 화면색에 맞춤(기본) 1=검정/흰색 그대로 2=투명(안 칠함) -->
+    <property id="bgMode" type="number">0</property>
     <property id="threshold" type="number">1</property>
     <property id="dayHighColor" type="number">1</property>
     <property id="dayLowColor" type="number">8</property>
