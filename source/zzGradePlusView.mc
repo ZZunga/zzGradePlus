@@ -61,6 +61,8 @@ class zzGradePlusView extends WatchUi.DataField {
 
     // ---- 레이아웃 ----
     private var _wide as Boolean = false;
+    // 1050 / 1060 (화면폭 480 이상). onUpdate 에서 매번 묻지 않는다
+    private var _big as Boolean = false;
     private var _titleOn as Boolean = true;
     private var _wTitle as Number = 0;          // 제목 "zzGrade+" 너비
     private var _labelW as Number = -1;         // 라벨 너비 (바뀔 때만 다시 잼)
@@ -159,7 +161,9 @@ class zzGradePlusView extends WatchUi.DataField {
     // =========================================================
     function onLayout(dc as Graphics.Dc) as Void {
         var w = dc.getWidth(), h = dc.getHeight();
-        _wide = w > System.getDeviceSettings().screenWidth * 0.75f;
+        var sw = System.getDeviceSettings().screenWidth;
+        _wide = w > sw * 0.75f;
+        _big = (sw >= 480);
         _L = (w * 0.05f + 0.5f).toNumber();
         _T = (h * 0.05f + 0.5f).toNumber();
         _R = w - _L;
@@ -365,8 +369,7 @@ class zzGradePlusView extends WatchUi.DataField {
         var sys = getBackgroundColor();
         var sysClear = (sys == Graphics.COLOR_TRANSPARENT);   // 기기가 "투명"이라고 알려준 경우
         var night = (sys == Graphics.COLOR_BLACK || sysClear);
-        var soft = (_bgMode == BG_AUTO)
-                && (System.getDeviceSettings().screenWidth >= 480);   // 1050 / 1060
+        var soft = (_bgMode == BG_AUTO) && _big;   // _big = 1050 / 1060
         var fg = night ? Graphics.COLOR_WHITE
                        : (soft ? 0x313152 : Graphics.COLOR_BLACK);
         var bg = night ? (soft ? 0x17181D : Graphics.COLOR_BLACK)
